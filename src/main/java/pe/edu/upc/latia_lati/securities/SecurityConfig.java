@@ -128,6 +128,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 HttpMethod.POST, "/login" ).permitAll()
                         .requestMatchers("/apis/clinicalrecords", "/apis/clinicalrecords/**").permitAll()
+                        .requestMatchers("/api/emergencycontacts", "/api/emergencycontacts/**").permitAll()
+                        .requestMatchers("/api/familyrelationships", "/api/familyrelationships/**").permitAll()
                         .requestMatchers("/error").permitAll()
 
                         // Swagger / OpenAPI
