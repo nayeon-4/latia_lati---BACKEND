@@ -8,6 +8,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import pe.edu.upc.latia_lati.entities.*;
+import pe.edu.upc.latia_lati.dtos.CountFamilyRelationshipsByProfileDTO;
+import pe.edu.upc.latia_lati.dtos.CountFamilyRelationshipsByTypeDTO;
 import pe.edu.upc.latia_lati.dtos.FamilyRelationshipDTO;
 import pe.edu.upc.latia_lati.exceptions.BusinessRuleException;
 import pe.edu.upc.latia_lati.exceptions.ResourceNotFoundException;
@@ -156,6 +158,40 @@ public class FamilyRelationshipController {
         List<FamilyRelationshipDTO> lista = frS.listarPorPerfil(healthProfileId)
                 .stream()
                 .map(fr -> convertirDTO(fr))
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    // Reporte con gráfico: cantidad de relaciones familiares por tipo de parentesco
+    @GetMapping("/reporte/tipos")
+    public ResponseEntity<List<CountFamilyRelationshipsByTypeDTO>> cantidadPorTipo() {
+
+        List<CountFamilyRelationshipsByTypeDTO> lista = frS.cantidadPorTipo()
+                .stream()
+                .map(resultado -> {
+                    CountFamilyRelationshipsByTypeDTO dto = new CountFamilyRelationshipsByTypeDTO();
+                    dto.setRelationshipType((String) resultado[0]);
+                    dto.setTotalRelationships(((Number) resultado[1]).intValue());
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    // Reporte con gráfico: cantidad de familiares registrados por perfil de salud
+    @GetMapping("/reporte/perfiles")
+    public ResponseEntity<List<CountFamilyRelationshipsByProfileDTO>> cantidadPorPerfil() {
+
+        List<CountFamilyRelationshipsByProfileDTO> lista = frS.cantidadPorPerfil()
+                .stream()
+                .map(resultado -> {
+                    CountFamilyRelationshipsByProfileDTO dto = new CountFamilyRelationshipsByProfileDTO();
+                    dto.setProfileName((String) resultado[0]);
+                    dto.setTotalRelatives(((Number) resultado[1]).intValue());
+                    return dto;
+                })
                 .toList();
 
         return ResponseEntity.ok(lista);
