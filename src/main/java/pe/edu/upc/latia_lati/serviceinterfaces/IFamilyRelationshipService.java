@@ -13,4 +13,6 @@ public interface IFamilyRelationshipService {
     public Optional<FamilyRelationship> listId(Long id);
     public List<FamilyRelationship> listarPorPerfil(Long idHealthProfile);
     public boolean existeRelacion(Long idOriginProfile, Long idRelativeProfile);
+    public List<Object[]> cantidadPorTipo();
+    public List<Object[]> cantidadPorPerfil();
 }

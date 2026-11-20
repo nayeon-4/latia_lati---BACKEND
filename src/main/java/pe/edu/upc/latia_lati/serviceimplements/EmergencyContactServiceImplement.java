@@ -51,4 +51,14 @@ public class EmergencyContactServiceImplement implements IEmergencyContactServic
     public List<Object[]> fichaEmergencia() {
         return ecR.getEmergencyCards();
     }
+
+    @Override
+    public List<Object[]> cantidadPorParentesco() {
+        return ecR.getTotalContactsByRelationship();
+    }
+
+    @Override
+    public List<Object[]> cantidadPorPerfil() {
+        return ecR.getTotalContactsByProfile();
+    }
 }

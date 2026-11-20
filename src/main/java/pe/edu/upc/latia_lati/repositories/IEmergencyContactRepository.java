@@ -25,4 +25,27 @@ public interface IEmergencyContactRepository extends JpaRepository<EmergencyCont
         "ORDER BY u.last_name, u.first_name",
         nativeQuery = true)
 public List<Object[]> getEmergencyCards();
+
+    // Reporte: cantidad de contactos de emergencia por parentesco
+    @Query(value = "SELECT COALESCE(ec.relationship, 'Sin parentesco'), COUNT(ec.id) " +
+            "FROM emergency_contacts ec " +
+            "GROUP BY ec.relationship " +
+            "ORDER BY COUNT(ec.id) DESC",
+            nativeQuery = true)
+    public List<Object[]> getTotalContactsByRelationship();
+
+    // Reporte: contactos principales y secundarios de cada perfil de salud activo
+    @Query(value = "SELECT COALESCE(u.first_name || ' ' || u.last_name, 'Perfil ' || hp.id_health_profile), " +
+            "SUM(CASE WHEN ec.primary_contact = true THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN ec.primary_contact = true THEN 0 ELSE 1 END) " +
+            "FROM health_profiles hp " +
+            "INNER JOIN emergency_contacts ec " +
+            "ON ec.id_health_profile = hp.id_health_profile " +
+            "LEFT JOIN users u " +
+            "ON u.id_user = hp.id_holder_user " +
+            "WHERE hp.active = true " +
+            "GROUP BY hp.id_health_profile, u.first_name, u.last_name " +
+            "ORDER BY hp.id_health_profile",
+            nativeQuery = true)
+    public List<Object[]> getTotalContactsByProfile();
 }

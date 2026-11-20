@@ -9,6 +9,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import pe.edu.upc.latia_lati.entities.*;
+import pe.edu.upc.latia_lati.dtos.CountEmergencyContactsByProfileDTO;
+import pe.edu.upc.latia_lati.dtos.CountEmergencyContactsByRelationshipDTO;
 import pe.edu.upc.latia_lati.dtos.EmergencyCardDTO;
 import pe.edu.upc.latia_lati.dtos.EmergencyContactDTO;
 import pe.edu.upc.latia_lati.exceptions.ResourceNotFoundException;
@@ -176,6 +178,41 @@ public class EmergencyContactController {
             dto.setRelationship((String) item[6]);
             lista.add(dto);
         }
+
+        return ResponseEntity.ok(lista);
+    }
+
+    // Reporte con gráfico: cantidad de contactos por parentesco
+    @GetMapping("/reporte/parentescos")
+    public ResponseEntity<List<CountEmergencyContactsByRelationshipDTO>> cantidadPorParentesco() {
+
+        List<CountEmergencyContactsByRelationshipDTO> lista = ecS.cantidadPorParentesco()
+                .stream()
+                .map(resultado -> {
+                    CountEmergencyContactsByRelationshipDTO dto = new CountEmergencyContactsByRelationshipDTO();
+                    dto.setRelationship((String) resultado[0]);
+                    dto.setTotalContacts(((Number) resultado[1]).intValue());
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    // Reporte con gráfico: contactos principales y secundarios por perfil de salud
+    @GetMapping("/reporte/perfiles")
+    public ResponseEntity<List<CountEmergencyContactsByProfileDTO>> cantidadPorPerfil() {
+
+        List<CountEmergencyContactsByProfileDTO> lista = ecS.cantidadPorPerfil()
+                .stream()
+                .map(resultado -> {
+                    CountEmergencyContactsByProfileDTO dto = new CountEmergencyContactsByProfileDTO();
+                    dto.setProfileName((String) resultado[0]);
+                    dto.setPrimaryContacts(((Number) resultado[1]).intValue());
+                    dto.setOtherContacts(((Number) resultado[2]).intValue());
+                    return dto;
+                })
+                .toList();
 
         return ResponseEntity.ok(lista);
     }
