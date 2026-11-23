@@ -53,4 +53,14 @@ public class FamilyRelationshipServiceImplement implements IFamilyRelationshipSe
         return frR.existsByOriginProfile_IdHealthProfileAndRelativeProfile_IdHealthProfile(
                 idOriginProfile, idRelativeProfile);
     }
+
+    @Override
+    public List<Object[]> cantidadPorTipo() {
+        return frR.getTotalRelationshipsByType();
+    }
+
+    @Override
+    public List<Object[]> cantidadPorPerfil() {
+        return frR.getTotalRelativesByProfile();
+    }
 }

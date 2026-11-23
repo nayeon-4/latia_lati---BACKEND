@@ -13,4 +13,6 @@ public interface IEmergencyContactService {
     public Optional<EmergencyContact> listId(Long id);
     public List<EmergencyContact> listarPrincipales();
     public List<Object[]> fichaEmergencia();
+    public List<Object[]> cantidadPorParentesco();
+    public List<Object[]> cantidadPorPerfil();
 }

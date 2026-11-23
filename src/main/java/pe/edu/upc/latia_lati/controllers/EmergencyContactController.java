@@ -3,12 +3,15 @@ package pe.edu.upc.latia_lati.controllers;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import pe.edu.upc.latia_lati.entities.*;
+import pe.edu.upc.latia_lati.dtos.CountEmergencyContactsByProfileDTO;
+import pe.edu.upc.latia_lati.dtos.CountEmergencyContactsByRelationshipDTO;
 import pe.edu.upc.latia_lati.dtos.EmergencyCardDTO;
 import pe.edu.upc.latia_lati.dtos.EmergencyContactDTO;
 import pe.edu.upc.latia_lati.exceptions.ResourceNotFoundException;
@@ -30,6 +33,7 @@ public class EmergencyContactController {
     }
 
     // HU12: Listar contactos de emergencia
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping
     public ResponseEntity<List<EmergencyContactDTO>> listar() {
 
@@ -49,6 +53,7 @@ public class EmergencyContactController {
     }
 
     // HU11: Crear contacto de emergencia
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping
     public ResponseEntity<EmergencyContactDTO> registrar(
             @Valid @RequestBody EmergencyContactDTO dto) {
@@ -84,6 +89,7 @@ public class EmergencyContactController {
     }
 
     // HU13: Encontrar contacto de emergencia por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<EmergencyContactDTO> buscarPorId(
             @PathVariable Long id) {
@@ -98,6 +104,7 @@ public class EmergencyContactController {
     }
 
     // HU14: Actualizar contacto de emergencia por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PutMapping("/{id}")
     public ResponseEntity<EmergencyContactDTO> actualizar(
             @PathVariable Long id,
@@ -131,6 +138,7 @@ public class EmergencyContactController {
     }
 
     // HU15: Borrar contacto de emergencia por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @PathVariable Long id) {
@@ -148,6 +156,7 @@ public class EmergencyContactController {
     }
 
     // HU68: Listar contactos de emergencia principales (reporte simple)
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/principales")
     public ResponseEntity<List<EmergencyContactDTO>> listarPrincipales() {
 
@@ -161,6 +170,7 @@ public class EmergencyContactController {
     }
 
     // HU69: Ficha de emergencia por perfil de salud (reporte con JOIN)
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/fichas")
     public ResponseEntity<List<EmergencyCardDTO>> fichaEmergencia() {
 
@@ -176,6 +186,43 @@ public class EmergencyContactController {
             dto.setRelationship((String) item[6]);
             lista.add(dto);
         }
+
+        return ResponseEntity.ok(lista);
+    }
+
+    // Reporte con gráfico: cantidad de contactos por parentesco
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @GetMapping("/reporte/parentescos")
+    public ResponseEntity<List<CountEmergencyContactsByRelationshipDTO>> cantidadPorParentesco() {
+
+        List<CountEmergencyContactsByRelationshipDTO> lista = ecS.cantidadPorParentesco()
+                .stream()
+                .map(resultado -> {
+                    CountEmergencyContactsByRelationshipDTO dto = new CountEmergencyContactsByRelationshipDTO();
+                    dto.setRelationship((String) resultado[0]);
+                    dto.setTotalContacts(((Number) resultado[1]).intValue());
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    // Reporte con gráfico: contactos principales y secundarios por perfil de salud
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @GetMapping("/reporte/perfiles")
+    public ResponseEntity<List<CountEmergencyContactsByProfileDTO>> cantidadPorPerfil() {
+
+        List<CountEmergencyContactsByProfileDTO> lista = ecS.cantidadPorPerfil()
+                .stream()
+                .map(resultado -> {
+                    CountEmergencyContactsByProfileDTO dto = new CountEmergencyContactsByProfileDTO();
+                    dto.setProfileName((String) resultado[0]);
+                    dto.setPrimaryContacts(((Number) resultado[1]).intValue());
+                    dto.setOtherContacts(((Number) resultado[2]).intValue());
+                    return dto;
+                })
+                .toList();
 
         return ResponseEntity.ok(lista);
     }

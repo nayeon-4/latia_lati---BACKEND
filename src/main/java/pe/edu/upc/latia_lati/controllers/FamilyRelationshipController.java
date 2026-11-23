@@ -3,11 +3,14 @@ package pe.edu.upc.latia_lati.controllers;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import pe.edu.upc.latia_lati.entities.*;
+import pe.edu.upc.latia_lati.dtos.CountFamilyRelationshipsByProfileDTO;
+import pe.edu.upc.latia_lati.dtos.CountFamilyRelationshipsByTypeDTO;
 import pe.edu.upc.latia_lati.dtos.FamilyRelationshipDTO;
 import pe.edu.upc.latia_lati.exceptions.BusinessRuleException;
 import pe.edu.upc.latia_lati.exceptions.ResourceNotFoundException;
@@ -29,6 +32,7 @@ public class FamilyRelationshipController {
     }
 
     // HU47: Listar relaciones familiares
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping
     public ResponseEntity<List<FamilyRelationshipDTO>> listar() {
 
@@ -42,6 +46,7 @@ public class FamilyRelationshipController {
     }
 
     // HU46: Crear relación familiar
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping
     public ResponseEntity<FamilyRelationshipDTO> registrar(
             @Valid @RequestBody FamilyRelationshipDTO dto) {
@@ -78,6 +83,7 @@ public class FamilyRelationshipController {
     }
 
     // HU48: Encontrar relación familiar por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<FamilyRelationshipDTO> buscarPorId(
             @PathVariable Long id) {
@@ -92,6 +98,7 @@ public class FamilyRelationshipController {
     }
 
     // HU49: Actualizar relación familiar por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PutMapping("/{id}")
     public ResponseEntity<FamilyRelationshipDTO> actualizar(
             @PathVariable Long id,
@@ -132,6 +139,7 @@ public class FamilyRelationshipController {
     }
 
     // HU50: Borrar relación familiar por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @PathVariable Long id) {
@@ -149,6 +157,7 @@ public class FamilyRelationshipController {
     }
 
     // HU73: Relaciones familiares de un perfil de salud (se mantiene la ruta original)
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/perfil/{healthProfileId}")
     public ResponseEntity<List<FamilyRelationshipDTO>> listarPorPerfilDeSalud(
             @PathVariable Long healthProfileId) {
@@ -156,6 +165,42 @@ public class FamilyRelationshipController {
         List<FamilyRelationshipDTO> lista = frS.listarPorPerfil(healthProfileId)
                 .stream()
                 .map(fr -> convertirDTO(fr))
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    // Reporte con gráfico: cantidad de relaciones familiares por tipo de parentesco
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @GetMapping("/reporte/tipos")
+    public ResponseEntity<List<CountFamilyRelationshipsByTypeDTO>> cantidadPorTipo() {
+
+        List<CountFamilyRelationshipsByTypeDTO> lista = frS.cantidadPorTipo()
+                .stream()
+                .map(resultado -> {
+                    CountFamilyRelationshipsByTypeDTO dto = new CountFamilyRelationshipsByTypeDTO();
+                    dto.setRelationshipType((String) resultado[0]);
+                    dto.setTotalRelationships(((Number) resultado[1]).intValue());
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(lista);
+    }
+
+    // Reporte con gráfico: cantidad de familiares registrados por perfil de salud
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @GetMapping("/reporte/perfiles")
+    public ResponseEntity<List<CountFamilyRelationshipsByProfileDTO>> cantidadPorPerfil() {
+
+        List<CountFamilyRelationshipsByProfileDTO> lista = frS.cantidadPorPerfil()
+                .stream()
+                .map(resultado -> {
+                    CountFamilyRelationshipsByProfileDTO dto = new CountFamilyRelationshipsByProfileDTO();
+                    dto.setProfileName((String) resultado[0]);
+                    dto.setTotalRelatives(((Number) resultado[1]).intValue());
+                    return dto;
+                })
                 .toList();
 
         return ResponseEntity.ok(lista);
