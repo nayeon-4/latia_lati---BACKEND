@@ -3,6 +3,7 @@ package pe.edu.upc.latia_lati.controllers;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
@@ -32,6 +33,7 @@ public class EmergencyContactController {
     }
 
     // HU12: Listar contactos de emergencia
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping
     public ResponseEntity<List<EmergencyContactDTO>> listar() {
 
@@ -51,6 +53,7 @@ public class EmergencyContactController {
     }
 
     // HU11: Crear contacto de emergencia
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping
     public ResponseEntity<EmergencyContactDTO> registrar(
             @Valid @RequestBody EmergencyContactDTO dto) {
@@ -86,6 +89,7 @@ public class EmergencyContactController {
     }
 
     // HU13: Encontrar contacto de emergencia por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public ResponseEntity<EmergencyContactDTO> buscarPorId(
             @PathVariable Long id) {
@@ -100,6 +104,7 @@ public class EmergencyContactController {
     }
 
     // HU14: Actualizar contacto de emergencia por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PutMapping("/{id}")
     public ResponseEntity<EmergencyContactDTO> actualizar(
             @PathVariable Long id,
@@ -133,6 +138,7 @@ public class EmergencyContactController {
     }
 
     // HU15: Borrar contacto de emergencia por Id
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @PathVariable Long id) {
@@ -150,6 +156,7 @@ public class EmergencyContactController {
     }
 
     // HU68: Listar contactos de emergencia principales (reporte simple)
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/principales")
     public ResponseEntity<List<EmergencyContactDTO>> listarPrincipales() {
 
@@ -163,6 +170,7 @@ public class EmergencyContactController {
     }
 
     // HU69: Ficha de emergencia por perfil de salud (reporte con JOIN)
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/fichas")
     public ResponseEntity<List<EmergencyCardDTO>> fichaEmergencia() {
 
@@ -183,6 +191,7 @@ public class EmergencyContactController {
     }
 
     // Reporte con gráfico: cantidad de contactos por parentesco
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/reporte/parentescos")
     public ResponseEntity<List<CountEmergencyContactsByRelationshipDTO>> cantidadPorParentesco() {
 
@@ -200,6 +209,7 @@ public class EmergencyContactController {
     }
 
     // Reporte con gráfico: contactos principales y secundarios por perfil de salud
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/reporte/perfiles")
     public ResponseEntity<List<CountEmergencyContactsByProfileDTO>> cantidadPorPerfil() {
 
