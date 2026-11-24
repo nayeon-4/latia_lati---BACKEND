@@ -17,7 +17,7 @@ public class ClinicalRecord {
     @JoinColumn(name = "idHealthProfile", nullable = false)
     private HealthProfile healthProfile;
 
-    @Column(name = "recordType", nullable = false, length = 20)
+    @Column(name = "recordType", nullable = false, length = 50)
     private String recordType;
 
     @Column(name = "title", nullable = false, length = 150)
