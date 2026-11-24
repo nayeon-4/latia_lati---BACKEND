@@ -127,8 +127,10 @@ public class SecurityConfig {
                         // Inicio de sesión público
                         .requestMatchers(
                                 HttpMethod.POST, "/login" ).permitAll()
-                          .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                          .requestMatchers(HttpMethod.PUT, "/api/users").permitAll()
+                                // Registro y recuperación/cambio de contraseña
+                        .requestMatchers(HttpMethod.POST, "/api/users/registro").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/buscar-por-email").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/users").permitAll()
 
                         .requestMatchers("/apis/clinicalrecords", "/apis/clinicalrecords/**").permitAll()
 //                        .requestMatchers("/api/emergencycontacts", "/api/emergencycontacts/**").permitAll()
