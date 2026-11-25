@@ -9,9 +9,13 @@ import pe.edu.upc.latia_lati.entities.HealthProfile;
 import pe.edu.upc.latia_lati.entities.Users;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IHealthProfileRepository extends JpaRepository<HealthProfile, Long> {
+    Optional<HealthProfile> findByIdHealthProfileAndOwnerUser_IdUserAndActiveTrue(
+            Long profileId, Long ownerId);
+
     // Consulta simple: grupo sanguíneo dentro de los perfiles del dueño autenticado.
     List<HealthProfile> findByOwnerUser_IdUserAndBloodTypeOrderByIdHealthProfileAsc(
             Long idUser, String bloodType);

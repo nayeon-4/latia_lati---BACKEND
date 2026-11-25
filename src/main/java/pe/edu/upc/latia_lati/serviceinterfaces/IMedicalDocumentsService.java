@@ -1,5 +1,6 @@
 package pe.edu.upc.latia_lati.serviceinterfaces;
 
+import pe.edu.upc.latia_lati.dtos.MonthlyDocumentCountDTO;
 import pe.edu.upc.latia_lati.entities.MedicalDocuments;
 
 import java.time.LocalDate;
@@ -14,4 +15,7 @@ public interface IMedicalDocumentsService {
     public Optional<MedicalDocuments> listId(Long id);
     public List<MedicalDocuments> buscarDocumentosPorFecha(LocalDate documentDate);
     public List<MedicalDocuments> buscarDocumentosPorUsuario(Long userId);
+
+    List<MedicalDocuments> findTimeline(Long profileId, LocalDate startDate, LocalDate endDate, String documentType);
+    List<MonthlyDocumentCountDTO> countByMonth(Long profileId, LocalDate startDate, LocalDate endDate, String documentType);
 }

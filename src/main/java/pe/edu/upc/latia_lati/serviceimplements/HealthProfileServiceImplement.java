@@ -1,6 +1,7 @@
 package pe.edu.upc.latia_lati.serviceimplements;
 
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,7 +59,7 @@ public class HealthProfileServiceImplement implements IHealthProfileService {
             throw new BusinessRuleException("Tipo de sangre inválido: usa A+, A-, B+, B-, AB+, AB-, O+ u O-");
         }
         List<HealthProfile> resultado = hpR.findByOwnerUser_IdUserAndBloodTypeOrderByIdHealthProfileAsc(
-                obtenerIdPropietarioAutenticado(), bloodType);
+                getCurrentOwnerId(), bloodType);
         if (resultado.isEmpty()) {
             throw new ResourceNotFoundException("No tienes perfiles con el grupo sanguíneo " + bloodType);
         }
@@ -69,7 +70,7 @@ public class HealthProfileServiceImplement implements IHealthProfileService {
     @PreAuthorize("isAuthenticated()")
     @Transactional(readOnly = true)
     public List<HealthProfile> listarActivosPropios() {
-        List<HealthProfile> resultado = hpR.getActiveProfilesByOwner(obtenerIdPropietarioAutenticado());
+        List<HealthProfile> resultado = hpR.getActiveProfilesByOwner(getCurrentOwnerId());
         if (resultado.isEmpty()) {
             throw new ResourceNotFoundException("No tienes perfiles de salud activos");
         }
@@ -77,9 +78,10 @@ public class HealthProfileServiceImplement implements IHealthProfileService {
     }
 
     // main identifica la sesión por username: se obtiene su ID sin modificar el JWT.
-    private Long obtenerIdPropietarioAutenticado() {
+    @Override
+    public Long getCurrentOwnerId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
+        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
             throw new AccessDeniedException("Inicia sesión para consultar tus perfiles");
         }
         Users propietario = uR.findByEmail(auth.getName())

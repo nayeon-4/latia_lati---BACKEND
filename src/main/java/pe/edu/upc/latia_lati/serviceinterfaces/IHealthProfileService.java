@@ -16,4 +16,5 @@ public interface IHealthProfileService {
     public List<HealthProfile> obtenerPorTipoSangre(String bloodType);
     public List<HealthProfile> listarActivosPropios();
 
+    Long getCurrentOwnerId();
 }
