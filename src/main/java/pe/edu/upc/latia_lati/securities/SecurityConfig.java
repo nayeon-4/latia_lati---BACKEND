@@ -60,7 +60,7 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(
                 List.of("http://localhost:4200",
-                       "https://latia-lati-front.onrender.com/",
+                       "https://latia-lati-front.onrender.com",
                        "https://latia.click",
                         "https://www.latia.click")
         );
