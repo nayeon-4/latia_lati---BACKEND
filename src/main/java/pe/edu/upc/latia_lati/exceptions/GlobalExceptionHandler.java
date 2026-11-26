@@ -15,14 +15,22 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> response(int status, String message, HttpServletRequest request) {
         return ResponseEntity.status(status).body(new ErrorResponse(status, message, request.getRequestURI()));
     }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
         return response(404, ex.getMessage(), request);
     }
+
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<ErrorResponse> handleBusinessRule(BusinessRuleException ex, HttpServletRequest request) {
         return response(400, ex.getMessage(), request);
     }
+
+    @ExceptionHandler(ChatServiceException.class)
+    public ResponseEntity<ErrorResponse> handleChatService(ChatServiceException ex, HttpServletRequest request) {
+        return response(ex.getStatus().value(), ex.getMessage(), request);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         String message = ex.getBindingResult().getFieldErrors().stream()
@@ -30,10 +38,12 @@ public class GlobalExceptionHandler {
                 .collect(java.util.stream.Collectors.joining("; "));
         return response(400, message, request);
     }
+
     @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ErrorResponse> handleInvalidInput(Exception ex, HttpServletRequest request) {
         return response(400, "Invalid JSON, date or path parameter", request);
     }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleConflict(DataIntegrityViolationException ex, HttpServletRequest request) {
         return response(409, "Duplicate value or operation conflicts with related records", request);
