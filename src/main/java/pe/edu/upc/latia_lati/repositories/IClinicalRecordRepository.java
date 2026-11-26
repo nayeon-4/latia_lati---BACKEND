@@ -12,6 +12,8 @@ import java.util.List;
 @Repository
 public interface IClinicalRecordRepository extends JpaRepository<ClinicalRecord, Long> {
     public List<ClinicalRecord> findByRecordType(String recordType);
+    List<ClinicalRecord> findByHealthProfile_IdHealthProfileOrderByEventDateDesc(Long profileId);
+
     @Query(value = "SELECT mc.name_medical_condition, COUNT(cr.id_clinical_record) " +
             "FROM medical_conditions mc " +
             "LEFT JOIN clinical_records cr " +

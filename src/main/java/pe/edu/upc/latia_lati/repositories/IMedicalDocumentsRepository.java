@@ -13,6 +13,8 @@ import java.util.List;
 @Repository
 public interface IMedicalDocumentsRepository extends JpaRepository<MedicalDocuments, Long> {
     public List<MedicalDocuments> findByDocumentDate(LocalDate documentDate);
+    List<MedicalDocuments> findByHealthProfile_IdHealthProfileOrderByDocumentDateDesc(Long profileId);
+
     @Query(value = """
     SELECT md.*
     FROM medical_documents md
