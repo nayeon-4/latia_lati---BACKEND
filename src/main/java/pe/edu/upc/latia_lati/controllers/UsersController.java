@@ -17,6 +17,7 @@ import pe.edu.upc.latia_lati.dtos.UsersRequestDTO;
 import pe.edu.upc.latia_lati.entities.*;
 import pe.edu.upc.latia_lati.dtos.UsersResponseDTO;
 import pe.edu.upc.latia_lati.exceptions.ResourceNotFoundException;
+import pe.edu.upc.latia_lati.serviceinterfaces.IRoleService;
 import pe.edu.upc.latia_lati.serviceinterfaces.IUsersService;
 
 @RestController
@@ -25,11 +26,13 @@ public class UsersController {
     private final IUsersService uS;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final IRoleService rS;
 
-    public UsersController(IUsersService uS, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
+    public UsersController(IUsersService uS, ModelMapper modelMapper, PasswordEncoder passwordEncoder, IRoleService rS) {
         this.uS = uS;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
+        this.rS = rS;
     }
 
     @GetMapping
@@ -48,9 +51,16 @@ public class UsersController {
 
         Users u = modelMapper.map(request, Users.class);
 
+        u.setIdUser(null);   // nunca aceptar un id desde el registro
+        u.setActive(true);   // ni un estado elegido por el cliente
         u.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
 
         uS.insert(u);
+
+        Role rol = new Role();
+        rol.setRol("ROLE_USER");
+        rol.setUser(u);
+        rS.insert(rol);
 
         UsersResponseDTO responseDTO = modelMapper.map(u, UsersResponseDTO.class);
 
@@ -98,7 +108,9 @@ public class UsersController {
         u.setUsername(request.getUsername());
         u.setEmail(request.getEmail());
         u.setActive(request.getActive());
-        u.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
+        if (request.getPasswordHash() != null && !request.getPasswordHash().isBlank()) {
+            u.setPasswordHash(passwordEncoder.encode(request.getPasswordHash()));
+        }
 
         uS.update(u);
 
