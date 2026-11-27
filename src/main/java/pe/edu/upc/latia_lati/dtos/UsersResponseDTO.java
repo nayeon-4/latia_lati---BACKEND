@@ -7,20 +7,15 @@ import jakarta.validation.constraints.*;
 
 public class UsersResponseDTO {
     private Long idUser;
-    @NotBlank(message = "El nombre de usuario es obligatorio")
+
     private String firstName;
 
-    @NotBlank(message = "El apellido del usuario es obligatorio")
     private String lastName;
 
-    @NotBlank(message = "El nombre de usuario es obligatorio")
     private String username;
 
-    @NotBlank(message = "El correo electrónico es obligatorio")
-    @Email(message = "El correo electrónico debe tener un formato válido")
     private String email;
 
-    @NotNull(message = "El estado activo es obligatorio")
     private Boolean active;
 
     private OffsetDateTime createdAt;

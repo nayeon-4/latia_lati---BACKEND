@@ -19,7 +19,6 @@ public class UsersRequestDTO {
     @Email(message = "El correo electrónico debe tener un formato válido")
     private String email;
 
-    @NotBlank(message = "La contraseña es obligatoria")
     private String passwordHash;
 
     @NotNull(message = "El estado activo es obligatorio")
